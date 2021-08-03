@@ -77,8 +77,6 @@ class Lesson(models.Model):
 
 
 # Enrollment model
-# <HINT> Once a user enrolled a class, an enrollment entry should be created between the user and course
-# And we could use the enrollment to track information such as exam submissions
 class Enrollment(models.Model):
     AUDIT = 'audit'
     HONOR = 'honor'
@@ -95,41 +93,30 @@ class Enrollment(models.Model):
     rating = models.FloatField(default=5.0)
 
 
-# Create a Question model
+# Question model
 class Question(models.Model):
-    # Used to persist question content for a course
-    # Has question content
-    question_text = models.CharField(max_length=100)
-    # Has a grade point for each question
-    points = models.IntegerField(default=1)
-    # Has a Many-To-Many relationship with course
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    question_text = models.CharField(max_length=100)
+    grade = models.IntegerField()
 
-    # A sample model method to calculate if learner get the score of the question
+    # A method to calculate if learner got the score of the question
     def is_get_score(self, selected_ids):
-       all_answers = self.choice_set.filter(is_correct=True).count()
-       selected_correct = self.choice_set.filter(is_correct=True, id__in=selected_ids).count()
-       if all_answers == selected_correct:
-           return True
-       else:
-           return False
+        all_answers = self.choice_set.filter(is_correct=True).count()
+        selected_correct = self.choice_set.filter(is_correct=True, id__in=selected_ids).count()
+        if all_answers == selected_correct:
+            return True
+        else:
+            return False
 
 
-# Create a Choice model
+# Choice model
 class Choice(models.Model):
-    # Used to persist choice content for a question
-    # Choice content
-    choice_text = models.CharField(max_length=100)
-    # Indicate if this choice of the question is a correct one or not
-    is_correct = models.BooleanField()
-    # One-To-Many relationship with Question
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    choice_text = models.CharField(max_length=100)
+    is_correct = models.BooleanField(default=False)
 
 
-# Create a Submission model
+# Submission model
 class Submission(models.Model):
-    # One enrollment could have multiple submission
     enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
-    # One choice could belong to multiple submissions
-    # One submission could have multiple choices
     choices = models.ManyToManyField(Choice)

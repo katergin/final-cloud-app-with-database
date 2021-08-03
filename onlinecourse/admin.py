@@ -1,22 +1,21 @@
 from django.contrib import admin
-# Import any new Models here
 from .models import Choice, Course, Instructor, Learner, Lesson, Question
 
 
 class LessonInline(admin.StackedInline):
     model = Lesson
-    extra = 5
+    extra = 1
 
 
 class ChoiceInline(admin.StackedInline):
     model = Choice
-    extra = 3
+    extra = 2
 
 
 class QuestionInline(admin.ModelAdmin):
     inlines = [ChoiceInline]
     model = Question
-    extra = 5
+    extra = 1
 
 
 class CourseAdmin(admin.ModelAdmin):
@@ -27,12 +26,20 @@ class CourseAdmin(admin.ModelAdmin):
 
 
 class LessonAdmin(admin.ModelAdmin):
-    list_display = ['title']
+    list_display = ('title',)
+
+
+class InstructorAdmin(admin.ModelAdmin):
+    list_display = ('user', 'full_time')
+
+
+class LearnerAdmin(admin.ModelAdmin):
+    list_display = ('user', 'occupation', 'social_link')
 
 
 # Register Question and Choice models
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Lesson, LessonAdmin)
 admin.site.register(Question, QuestionInline)
-admin.site.register(Instructor)
-admin.site.register(Learner)
+admin.site.register(Instructor, InstructorAdmin)
+admin.site.register(Learner, LearnerAdmin)
